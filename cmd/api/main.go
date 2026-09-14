@@ -4,11 +4,19 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Fabrix300/gopulse-api/internal/application/monitor"
+	"github.com/Fabrix300/gopulse-api/internal/infrastructure/persistence/memory"
 	httptransport "github.com/Fabrix300/gopulse-api/internal/transport/http"
 )
 
 func main() {
-	handler := httptransport.NewHandler()
+	repository := memory.NewMonitorRepository()
+
+	createMonitorService := monitor.NewCreateMonitorService(
+		repository,
+	)
+
+	handler := httptransport.NewHandler(createMonitorService)
 
 	server := &http.Server{
 		Addr:    ":8088",
