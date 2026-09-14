@@ -3,14 +3,64 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/Fabrix300/gopulse-api/internal/application/monitor"
 )
 
-func NewHandler() http.Handler {
+// TODO: REFACTOR: move to a separate file or reorganize the code
+type Handler struct {
+	createMonitor monitor.CreateMonitorUseCase
+}
+
+func (h *Handler) createMonitorHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	var request createMonitorRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "invalid request body",
+		})
+		return
+	}
+
+	result, err := h.createMonitor.Execute(
+		r.Context(),
+		monitor.CreateMonitorCommand{
+			Name: request.Name,
+			URL:  request.URL,
+		},
+	)
+
+	if err != nil {
+		// temporal
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, monitorResponse{
+		ID:     result.ID,
+		Name:   result.Name,
+		URL:    result.URL,
+		Active: result.Active,
+	})
+}
+
+func NewHandler(
+	createMonitor monitor.CreateMonitorUseCase,
+) http.Handler {
+	h := &Handler{
+		createMonitor: createMonitor,
+	}
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("GET /api/v1/monitors", listMonitorsHandler)
-	mux.HandleFunc("POST /api/v1/monitors", createMonitorHandler)
+	mux.HandleFunc("POST /api/v1/monitors", h.createMonitorHandler)
 
 	return mux
 }
@@ -42,22 +92,22 @@ func listMonitorsHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, monitors)
 }
 
-func createMonitorHandler(w http.ResponseWriter, r *http.Request) {
-	var request createMonitorRequest
+// func createMonitorHandler(w http.ResponseWriter, r *http.Request) {
+// 	var request createMonitorRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{
-			"error": "invalid request body",
-		})
-		return
-	}
+// 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+// 		writeJSON(w, http.StatusBadRequest, map[string]string{
+// 			"error": "invalid request body",
+// 		})
+// 		return
+// 	}
 
-	response := monitorResponse{
-		ID:     1,
-		Name:   request.Name,
-		URL:    request.URL,
-		Active: true,
-	}
+// 	response := monitorResponse{
+// 		ID:     1,
+// 		Name:   request.Name,
+// 		URL:    request.URL,
+// 		Active: true,
+// 	}
 
-	writeJSON(w, http.StatusCreated, response)
-}
+// 	writeJSON(w, http.StatusCreated, response)
+// }
