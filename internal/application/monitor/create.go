@@ -6,6 +6,8 @@ import (
 	"github.com/Fabrix300/gopulse-api/internal/domain/model"
 )
 
+// TODO: Refactor might be needed to separate the use case from the service layer.
+
 type CreateMonitorCommand struct {
 	Name string
 	URL  string
@@ -32,9 +34,7 @@ type CreateMonitorService struct {
 	repository MonitorRepository
 }
 
-func NewCreateMonitorService(
-	repository MonitorRepository,
-) *CreateMonitorService {
+func NewCreateMonitorService(repository MonitorRepository) *CreateMonitorService {
 	return &CreateMonitorService{
 		repository: repository,
 	}
