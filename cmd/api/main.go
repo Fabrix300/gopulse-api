@@ -9,7 +9,10 @@ import (
 	httptransport "github.com/Fabrix300/gopulse-api/internal/transport/http"
 )
 
+var PORT = ":8088"
+
 func main() {
+
 	repository := memory.NewMonitorRepository()
 
 	createMonitorService := monitor.NewCreateMonitorService(
@@ -17,13 +20,14 @@ func main() {
 	)
 
 	handler := httptransport.NewHandler(createMonitorService)
+	router := httptransport.NewRouter(handler)
 
 	server := &http.Server{
-		Addr:    ":8088",
-		Handler: handler,
+		Addr:    PORT,
+		Handler: router,
 	}
 
-	log.Println("GoPulse API running on :8080")
+	log.Println("GoPulse API running on " + PORT)
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
