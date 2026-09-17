@@ -14,11 +14,10 @@ var PORT = ":8088"
 func main() {
 	monitorRepository := memory.NewMonitorRepository()
 
-	createMonitorService := monitor.NewCreateMonitorService(
-		monitorRepository,
-	)
+	createMonitorService := monitor.NewCreateMonitorService(monitorRepository)
+	listMonitorService := monitor.NewListMonitorsService(monitorRepository)
 
-	handler := httptransport.NewHandler(createMonitorService)
+	handler := httptransport.NewHandler(createMonitorService, listMonitorService)
 	router := httptransport.NewRouter(handler)
 
 	server := &http.Server{
