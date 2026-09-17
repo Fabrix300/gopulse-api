@@ -6,10 +6,15 @@ import (
 
 type MonitorHandler struct {
 	createMonitorUseCase monitor.CreateMonitorUseCase
+	listMonitorsUseCase  monitor.ListMonitorsUseCase
 }
 
-func NewHandler(createMonitorUseCase monitor.CreateMonitorUseCase) *MonitorHandler {
+func NewHandler(
+	createMonitorUseCase monitor.CreateMonitorUseCase,
+	listMonitorsUseCase monitor.ListMonitorsUseCase,
+) *MonitorHandler {
 	return &MonitorHandler{
 		createMonitorUseCase: createMonitorUseCase,
+		listMonitorsUseCase:  listMonitorsUseCase,
 	}
 }

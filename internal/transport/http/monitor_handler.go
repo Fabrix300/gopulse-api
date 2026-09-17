@@ -50,22 +50,23 @@ func (h *MonitorHandler) listMonitorsHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	// TODO: create and call ListMonitorsUseCase
+	result, err := h.listMonitorsUseCase.Execute(r.Context())
 
-	monitors := []monitorResponse{
-		{
-			ID:     1,
-			Name:   "Google",
-			URL:    "https://google.com",
-			Active: true,
-		},
-		{
-			ID:     2,
-			Name:   "GitHub",
-			URL:    "https://github.com",
-			Active: true,
-		},
+	if err != nil {
+		// TODO: Might need to handle errors somehow...
+		return
 	}
 
-	writeJSON(w, http.StatusOK, monitors)
+	response := make([]monitorResponse, 0, len(result))
+
+	for _, monitor := range result {
+		response = append(response, monitorResponse{
+			ID:     monitor.ID,
+			Name:   monitor.Name,
+			URL:    monitor.URL,
+			Active: monitor.Active,
+		})
+	}
+
+	writeJSON(w, http.StatusOK, response)
 }
