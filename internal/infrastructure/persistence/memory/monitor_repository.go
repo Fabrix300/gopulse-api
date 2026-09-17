@@ -8,7 +8,7 @@ import (
 )
 
 type MonitorRepository struct {
-	mu       sync.Mutex
+	mu       sync.RWMutex
 	monitors []model.Monitor
 	nextID   int64
 }
@@ -34,3 +34,27 @@ func (r *MonitorRepository) Save(
 
 	return monitor, nil
 }
+
+func (r *MonitorRepository) List(
+	ctx context.Context,
+) ([]model.Monitor, error) {
+
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	monitors := make([]model.Monitor, len(r.monitors))
+	copy(monitors, r.monitors)
+
+	return monitors, nil
+}
+
+// A more idiomatic version of "List"?
+// func (r *MonitorRepository) List(
+// 	ctx context.Context,
+// ) ([]model.Monitor, error) {
+
+// 	r.mu.RLock()
+// 	defer r.mu.RUnlock()
+
+// 	return append([]model.Monitor(nil), r.monitors...), nil
+// }

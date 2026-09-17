@@ -2,7 +2,7 @@ package http
 
 import "net/http"
 
-func NewRouter(h *Handler) http.Handler {
+func NewRouter(h *MonitorHandler) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", healthHandler)

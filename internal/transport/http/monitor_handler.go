@@ -7,7 +7,7 @@ import (
 	"github.com/Fabrix300/gopulse-api/internal/application/monitor"
 )
 
-func (h *Handler) createMonitorHandler(
+func (h *MonitorHandler) createMonitorHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -46,7 +46,7 @@ func (h *Handler) createMonitorHandler(
 	writeJSON(w, http.StatusCreated, response)
 }
 
-func (h *Handler) listMonitorsHandler(
+func (h *MonitorHandler) listMonitorsHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {

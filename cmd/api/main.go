@@ -12,11 +12,10 @@ import (
 var PORT = ":8088"
 
 func main() {
-
-	repository := memory.NewMonitorRepository()
+	monitorRepository := memory.NewMonitorRepository()
 
 	createMonitorService := monitor.NewCreateMonitorService(
-		repository,
+		monitorRepository,
 	)
 
 	handler := httptransport.NewHandler(createMonitorService)
